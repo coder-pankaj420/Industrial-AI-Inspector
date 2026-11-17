@@ -1,0 +1,30 @@
+{% extends "app.html" %}{% block title %}History · Industrial AI Inspector{% endblock %}
+{% block content %}
+<div class="page-title"><div><h2 style="margin:0">Inspection History</h2><span class="muted small" id="count"></span></div><a class="btn primary" href="/inspection">＋ New Inspection</a></div>
+<div class="card"><div class="toolbar">
+<input id="q" placeholder="Search ID, category, model…" value="{{ request.args.get('q','') }}" aria-label="Search">
+<select id="f-cat" aria-label="Category"><option value="">All categories</option>{% for c in categories %}<option>{{ c }}</option>{% endfor %}</select>
+<select id="f-status" aria-label="Result"><option value="">All results</option><option>PASS</option><option>FAIL</option><option>REVIEW REQUIRED</option></select>
+<select id="f-sev" aria-label="Severity"><option value="">All severities</option><option>None</option><option>Low</option><option>Medium</option><option>High</option></select>
+<input type="date" id="f-from" aria-label="From"><input type="date" id="f-to" aria-label="To">
+<select id="f-sort" aria-label="Sort"><option value="">Latest first</option><option value="oldest">Oldest first</option><option value="score">Highest score</option></select></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Category</th><th>Image</th><th>Date (UTC)</th><th>Model</th><th>Score</th><th>Result</th><th>Defects</th><th>Severity</th><th></th></tr></thead><tbody id="rows"></tbody></table></div>
+<div style="display:flex;justify-content:center;gap:.6rem;margin-top:1rem"><button class="btn sm" id="prev">← Prev</button><span class="muted small" id="pg"></span><button class="btn sm" id="next">Next →</button></div></div>
+{% endblock %}
+{% block scripts %}<script>
+let page=1,pages=1;
+async function load(){
+  const p=new URLSearchParams({page,per_page:15});
+  [['q','q'],['f-cat','category'],['f-status','status'],['f-sev','severity'],['f-from','date_from'],['f-to','date_to'],['f-sort','sort']].forEach(([i,k])=>{const v=$('#'+i).value;if(v)p.set(k,v)});
+  try{const j=await api('/api/inspections?'+p);pages=j.pages||1;
+  $('#count').textContent=j.total+' record(s)';$('#pg').textContent=`Page ${j.page} / ${pages}`;
+  $('#rows').innerHTML=j.inspections.length?j.inspections.map(i=>`<tr><td class="mono">${esc(i.inspection_code)}</td><td>${esc(i.category)}</td><td><img class="thumb" src="${mediaUp(i.original_image)}" alt=""></td>
+  <td>${fmtDate(i.created_at)}</td><td class="small">${esc(i.model_name)}</td><td>${i.anomaly_score.toFixed(2)}</td><td>${badge(i.status)}</td><td>${i.defect_count}</td><td>${badge(i.severity)}</td>
+  <td style="white-space:nowrap"><a class="btn sm" href="/inspection?id=${i.id}">View</a> <a class="btn sm" href="/api/reports/${i.id}">PDF</a> <button class="btn sm danger" data-id="${i.id}" data-code="${esc(i.inspection_code)}">Delete</button></td></tr>`).join(''):'<tr><td colspan="10" class="empty">No inspections match. <a href="/inspection">Run one</a>.</td></tr>';
+  $$('#rows .danger').forEach(b=>b.onclick=async()=>{if(await confirmDialog('Delete inspection?',`${b.dataset.code} and its images will be permanently removed.`)){
+    try{await api('/api/inspections/'+b.dataset.id,{method:'DELETE'});toast('Inspection deleted');load()}catch(e){toast(e.message,true)}}});
+  }catch(e){toast(e.message,true)}
+}
+['q','f-cat','f-status','f-sev','f-from','f-to','f-sort'].forEach(i=>$('#'+i).addEventListener(i==='q'?'input':'change',()=>{page=1;clearTimeout(window._t);window._t=setTimeout(load,200)}));
+$('#prev').onclick=()=>{if(page>1){page--;load()}};$('#next').onclick=()=>{if(page<pages){page++;load()}};load();
+</script>{% endblock %}

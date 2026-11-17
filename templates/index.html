@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block body %}
+<section class="hero">
+  <nav class="pub-nav"><a class="logo" href="/" style="padding:0"><i>◎</i><span>Industrial AI Inspector</span></a>
+    <div class="links"><a href="#features">Features</a><a href="#how">How it works</a><a href="/models">Models</a><a class="btn primary sm" href="/dashboard">Dashboard</a></div></nav>
+  <div class="hero-in">
+    <div>
+      <div class="eyebrow">Intelligent Visual Inspection. Automated Quality Assurance.</div>
+      <h1>Industrial Intelligence. <em>Defect Detection.</em> Zero Compromise.</h1>
+      <p class="muted" style="font-size:1.1rem;max-width:560px">An AI-powered visual inspection platform that detects, localizes and analyses manufacturing defects using advanced computer vision.</p>
+      <div style="display:flex;gap:.8rem;flex-wrap:wrap;margin-top:1.6rem"><a class="btn primary lg" href="/inspection">Start Inspection →</a><a class="btn lg" href="/dashboard">Explore Dashboard</a></div>
+      <p class="small muted" style="margin-top:1.4rem">Runs fully locally · CPU-friendly · optional Gemini explanations · demonstration software</p>
+    </div>
+    <div class="scan"><img src="{{ url_for('static', filename='samples/scratched_metal.png') }}" alt="Metal surface being scanned for defects">
+      <div class="tag" style="left:24%;top:34%;width:52%;height:34%">Scratch candidate</div></div>
+  </div>
+</section>
+<section class="section" id="stats" style="padding-bottom:1rem"><div class="grid g4">
+  <div class="card metric"><div class="l">Total inspections</div><div class="v" id="s-total">–</div></div>
+  <div class="card metric"><div class="l">Defects detected</div><div class="v" id="s-def">–</div></div>
+  <div class="card metric"><div class="l">Flagged rate</div><div class="v" id="s-rate">–</div></div>
+  <div class="card metric"><div class="l">Avg. processing time</div><div class="v" id="s-time">–</div></div></div>
+  <p class="small muted" style="text-align:center;margin-top:.8rem">Live values from this installation's database. No model accuracy is claimed - detectors are demonstration pipelines and have not been benchmarked here.</p></section>
+<section class="section" id="features"><h2>Everything a quality-control station needs</h2><p class="sub">Six capabilities in one workstation</p>
+<div class="grid g3">
+{% for ic,t,d in [('🎯','AI-Powered Defect Detection','Reference-based PCA autoencoder, PatchCore-style detector and a classical CV demo mode behind one interface.'),('⚡','Real-Time Visual Inspection','Upload or drop an image and get a verdict, score and overlays in seconds on a laptop CPU.'),('🔥','Anomaly Localization','Heatmaps from real anomaly scores, with boxes, labels, severity and pixel coordinates.'),('📝','AI-Generated Inspection Reports','Plain-language explanations (Gemini or local) and downloadable PDF reports.'),('📈','Historical Quality Analytics','SQLite-backed history, trends, defect mix, severity and model usage.'),('🏭','Multi-Category Inspection','Metal, fabric, PCB, wood, bottle and general components.')] %}
+<div class="card feat"><div class="ic">{{ ic }}</div><h3>{{ t }}</h3><p class="muted" style="margin:0">{{ d }}</p></div>{% endfor %}
+</div></section>
+<section class="section" id="how"><h2>How it works</h2><p class="sub">Four steps from image to report</p><div class="grid g4">
+{% for t,d in [('Upload','Add an industrial product image, or try a bundled sample.'),('Analyse','The selected detector scores every region of the image.'),('Localize','Anomalous regions become labelled, severity-rated boxes.'),('Report','Get an explanation and a downloadable PDF report.')] %}
+<div class="card step"><div class="n">{{ loop.index }}</div><h3>{{ t }}</h3><p class="muted" style="margin:0">{{ d }}</p></div>{% endfor %}</div>
+<div style="text-align:center;margin-top:2.4rem"><a class="btn primary lg" href="/inspection">Run your first inspection</a></div></section>
+<footer>Industrial AI Inspector · AI/ML Club demo · Demonstration software, not a certified quality-control system.</footer>
+{% endblock %}
+{% block scripts %}<script>
+api('/api/analytics').then(a=>{$('#s-total').textContent=a.total;$('#s-def').textContent=a.defects;
+$('#s-rate').textContent=a.total?Math.round((a.total-a.passed)/a.total*100)+'%':'–';$('#s-time').textContent=a.total?a.avg_time+' s':'–';}).catch(()=>{});
+</script>{% endblock %}

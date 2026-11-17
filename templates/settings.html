@@ -1,0 +1,23 @@
+{% extends "app.html" %}{% block title %}Settings · Industrial AI Inspector{% endblock %}
+{% block content %}
+<div class="page-title"><div><h2 style="margin:0">Settings</h2><span class="muted small">Stored in SQLite. Secrets are never stored here.</span></div></div>
+<div class="grid g2"><div class="card"><b>Inspection</b>
+<label for="s-thr">Anomaly threshold (FAIL at or above): <span id="thr-v"></span></label><input type="range" id="s-thr" min="0.1" max="0.95" step="0.01" value="{{ settings.anomaly_threshold }}">
+<label for="s-sens">Sensitivity multiplier: <span id="sens-v"></span></label><input type="range" id="s-sens" min="0.5" max="2.5" step="0.1" value="{{ settings.sensitivity }}">
+<label for="s-cat">Default category</label><select id="s-cat">{% for c in categories %}<option value="{{ c }}" {{ 'selected' if c==settings.default_category }}>{{ c|title }}</option>{% endfor %}</select>
+<label for="s-model">Default model</label><select id="s-model">{% for m in models %}{% if m.state in ('available','demo') %}<option value="{{ m.key }}" {{ 'selected' if m.key==settings.default_model }}>{{ m.name }}</option>{% endif %}{% endfor %}</select>
+<label for="s-dev">Compute device (PatchCore only)</label><select id="s-dev">{% for d in ['auto','cpu','cuda'] %}<option {{ 'selected' if d==settings.device }}>{{ d }}</option>{% endfor %}</select>
+<label for="s-mb">Maximum upload size (MB)</label><input type="number" id="s-mb" min="1" max="25" value="{{ settings.max_upload_mb }}">
+<label for="s-theme">Theme</label><select id="s-theme"><option {{ 'selected' if settings.theme=='dark' }}>dark</option><option {{ 'selected' if settings.theme=='light' }}>light</option></select>
+<button class="btn primary" id="save" style="margin-top:1rem">Save settings</button></div>
+<div class="card"><b>AI assistant provider</b>
+<p class="muted small">Provider: <b>{{ llm.provider }}</b> · API key: <span class="badge b-{{ 'ok' if llm.api_key_configured else 'warn' }}">{{ 'configured' if llm.api_key_configured else 'not set' }}</span> · Active engine: <b>{{ llm.active }}</b></p>
+<div class="notice">API keys are read only from environment variables, never from the database or browser. Copy <code>.env.example</code> to <code>.env</code> and set:<pre class="mono small" style="margin:.5rem 0 0">LLM_PROVIDER=gemini
+GEMINI_API_KEY=your-key-here</pre>Restart the app afterwards. Without a key the deterministic local explainer is used and labelled as such.</div></div></div>
+{% endblock %}
+{% block scripts %}<script>
+const sync=()=>{$('#thr-v').textContent=$('#s-thr').value;$('#sens-v').textContent=$('#s-sens').value};$('#s-thr').oninput=$('#s-sens').oninput=sync;sync();
+$('#save').onclick=async()=>{try{await api('/api/settings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({anomaly_threshold:$('#s-thr').value,sensitivity:$('#s-sens').value,
+default_category:$('#s-cat').value,default_model:$('#s-model').value,device:$('#s-dev').value,max_upload_mb:$('#s-mb').value,theme:$('#s-theme').value})});
+document.documentElement.dataset.theme=$('#s-theme').value;toast('Settings saved')}catch(e){toast(e.message,true)}};
+</script>{% endblock %}

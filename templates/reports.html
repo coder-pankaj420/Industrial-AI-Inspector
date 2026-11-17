@@ -1,0 +1,12 @@
+{% extends "app.html" %}{% block title %}Reports · Industrial AI Inspector{% endblock %}
+{% block content %}
+<div class="page-title"><div><h2 style="margin:0">Reports</h2><span class="muted small">PDF reports are generated from saved inspection records</span></div></div>
+<div class="card"><div class="toolbar"><input id="q" placeholder="Search…" aria-label="Search"><select id="st" aria-label="Result"><option value="">All results</option><option>PASS</option><option>FAIL</option><option>REVIEW REQUIRED</option></select></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Category</th><th>Date (UTC)</th><th>Result</th><th>Severity</th><th>Downloads</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+{% endblock %}
+{% block scripts %}<script>
+async function load(){const p=new URLSearchParams({per_page:50});if($('#q').value)p.set('q',$('#q').value);if($('#st').value)p.set('status',$('#st').value);
+try{const j=await api('/api/inspections?'+p);$('#rows').innerHTML=j.inspections.length?j.inspections.map(i=>`<tr><td class="mono">${esc(i.inspection_code)}</td><td>${esc(i.category)}</td><td>${fmtDate(i.created_at)}</td><td>${badge(i.status)}</td><td>${badge(i.severity)}</td>
+<td style="white-space:nowrap"><a class="btn sm primary" href="/api/reports/${i.id}">PDF report</a> <a class="btn sm" href="${mediaPr(i.heatmap_image)}?download=1">Heatmap</a> <a class="btn sm" href="${mediaPr(i.annotated_image)}?download=1">Annotated</a></td></tr>`).join(''):'<tr><td colspan="6" class="empty">No inspections yet. <a href="/inspection">Run one</a> to generate a report.</td></tr>'}catch(e){toast(e.message,true)}}
+$('#q').oninput=()=>{clearTimeout(window._t);window._t=setTimeout(load,200)};$('#st').onchange=load;load();
+</script>{% endblock %}

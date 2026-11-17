@@ -1,0 +1,17 @@
+{% extends "app.html" %}{% block title %}Dashboard · Industrial AI Inspector{% endblock %}
+{% block content %}
+<div class="page-title"><div><h2 style="margin:0">Overview</h2><span class="muted small">Live values from the inspection database</span></div><a class="btn primary" href="/inspection">＋ New Inspection</a></div>
+<div class="grid g5" style="margin-bottom:1.1rem">
+{% for id,l in [('m-total','Total Inspections'),('m-pass','Passed'),('m-fail','Failed / Review'),('m-def','Defects Detected'),('m-time','Avg Processing Time')] %}
+<div class="card metric"><div class="l">{{ l }}</div><div class="v" id="{{ id }}">–</div></div>{% endfor %}</div>
+<div id="dash-empty" class="notice" style="display:none;margin-bottom:1rem">No inspections yet. Run one from <a href="/inspection">New Inspection</a> or run <code>python run.py --init-db</code> to seed the bundled samples.</div>
+<div class="grid g3" style="margin-bottom:1.1rem">
+<div class="card" style="grid-column:span 2"><b>Inspections over time</b><div class="chart-box"><canvas id="c-time"></canvas></div></div>
+<div class="card"><b>Pass vs Fail</b><div class="chart-box"><canvas id="c-pf"></canvas></div></div>
+<div class="card"><b>Defect distribution</b><div class="chart-box"><canvas id="c-def"></canvas></div></div>
+<div class="card"><b>Defect severity</b><div class="chart-box"><canvas id="c-sev"></canvas></div></div>
+<div class="card"><b>Inspection categories</b><div class="chart-box"><canvas id="c-cat"></canvas></div></div></div>
+<div class="card"><div class="page-title" style="margin-bottom:.4rem"><b>Recent inspections</b><a href="/history" class="small">View all →</a></div>
+<div class="table-wrap"><table><thead><tr><th>ID</th><th>Category</th><th>Image</th><th>Date</th><th>Result</th><th>Defects</th><th>Severity</th><th></th></tr></thead><tbody id="recent"></tbody></table></div></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/chart.umd.js') }}"></script><script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>{% endblock %}

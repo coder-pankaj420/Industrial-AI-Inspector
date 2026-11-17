@@ -1,0 +1,16 @@
+<!doctype html>
+<html lang="en" data-theme="{{ settings.theme if settings else 'dark' }}">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Industrial AI Inspector{% endblock %}</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%233B82F6'/><circle cx='16' cy='16' r='6' fill='none' stroke='white' stroke-width='3'/></svg>">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body>
+{% block body %}{% endblock %}
+<div id="modal" class="modal-bg"><div class="card modal"><h3 id="modal-title">Confirm</h3><p id="modal-text" class="muted"></p>
+<div style="display:flex;gap:.6rem;justify-content:flex-end"><button class="btn" id="modal-no">Cancel</button><button class="btn danger" id="modal-yes">Delete</button></div></div></div>
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body></html>

@@ -1,0 +1,18 @@
+{% extends "app.html" %}{% block title %}Analytics · Industrial AI Inspector{% endblock %}
+{% block content %}
+<div class="page-title"><div><h2 style="margin:0">Defect Analytics</h2><span class="muted small">Computed from saved inspections</span></div>
+<div class="toolbar" style="margin:0"><input type="date" id="df" aria-label="From"><input type="date" id="dt" aria-label="To"><button class="btn" id="apply">Apply</button><button class="btn" id="clear">Clear</button></div></div>
+<div class="grid g4" style="margin-bottom:1.1rem">
+<div class="card metric"><div class="l">Inspections</div><div class="v" id="k-total">–</div></div><div class="card metric"><div class="l">Pass rate</div><div class="v" id="k-rate">–</div></div>
+<div class="card metric"><div class="l">Avg time</div><div class="v" id="k-time">–</div></div><div class="card metric"><div class="l">Avg anomaly score</div><div class="v" id="k-score">–</div></div></div>
+<div id="a-empty" class="notice" style="display:none;margin-bottom:1rem">No inspections in this range.</div>
+<div class="grid g2">
+<div class="card"><b>Daily trend</b><div class="chart-box"><canvas id="a-daily"></canvas></div></div>
+<div class="card"><b>Weekly trend</b><div class="chart-box"><canvas id="a-weekly"></canvas></div></div>
+<div class="card"><b>Defect frequency by category</b><div class="chart-box"><canvas id="a-catdef"></canvas></div></div>
+<div class="card"><b>Most common defects</b><div class="chart-box"><canvas id="a-types"></canvas></div></div>
+<div class="card"><b>Severity distribution</b><div class="chart-box"><canvas id="a-sev"></canvas></div></div>
+<div class="card"><b>Pass / fail ratio</b><div class="chart-box"><canvas id="a-pf"></canvas></div></div>
+<div class="card"><b>Model usage</b><div class="chart-box"><canvas id="a-model"></canvas></div></div></div>
+{% endblock %}
+{% block scripts %}<script src="{{ url_for('static', filename='js/chart.umd.js') }}"></script><script src="{{ url_for('static', filename='js/dashboard.js') }}"></script><script src="{{ url_for('static', filename='js/analytics.js') }}"></script>{% endblock %}

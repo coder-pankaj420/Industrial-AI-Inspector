@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block body %}
+<div class="shell">
+<aside class="sidebar" id="sidebar">
+  <a class="logo" href="/"><i>◎</i><span>AI Inspector</span></a>
+  <nav class="nav">
+    {% for href, key, icon, label in [('/dashboard','dashboard','▦','Overview'),('/inspection','inspection','＋','New Inspection'),('/history','history','☰','Inspection History'),('/analytics','analytics','◔','Defect Analytics'),('/models','models','◈','AI Models'),('/reports','reports','▤','Reports'),('/settings','settings','⚙','Settings')] %}
+    <a href="{{ href }}" class="{{ 'active' if active == key }}"><span>{{ icon }}</span>{{ label }}</a>
+    {% endfor %}
+  </nav>
+  <div class="muted small" style="margin-top:auto;padding:.5rem">Demonstration software.<br>Results are not validated QC decisions.</div>
+</aside>
+<div class="main">
+  <header class="topbar">
+    <button class="btn sm menu-btn" id="menu-btn">☰</button>
+    <form class="search" action="/history" method="get"><input name="q" placeholder="Search inspections…" aria-label="Search"></form>
+    <span class="small muted"><span class="status-dot" id="sys-dot"></span><span id="sys-text">Checking…</span></span>
+    <button class="bell" id="bell" aria-label="Notifications">🔔<b id="bell-n" style="display:none">0</b></button>
+    <div class="avatar" title="PT">PT</div>
+  </header>
+  <div class="card pop" id="pop"><b>Recent alerts</b><div id="pop-body" class="small muted" style="margin-top:.5rem">Loading…</div></div>
+  <main class="content">{% block content %}{% endblock %}</main>
+</div></div>
+{% endblock %}
