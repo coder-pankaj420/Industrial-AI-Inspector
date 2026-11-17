@@ -85,4 +85,5 @@ Nothing is downloaded automatically. Add normal images to `datasets/reference/<m
 Built with Flask, OpenCV, scikit-learn, ReportLab and Chart.js (MIT).
 
 ---
-
+## AUTHOR
+PANKAJ TALWAR
