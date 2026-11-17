@@ -37,6 +37,8 @@ Generate a professional PDF from any saved inspection, and download the heatmap 
 
 ![Reports](docs/screenshots/reports.png)
 
+![Report-pdf](docs/screenshots/report-pdf.png)
+
 ## Settings
 Anomaly threshold, sensitivity, default category and model, compute device, upload limit and theme. API keys are read only from environment variables.
 
@@ -84,4 +86,3 @@ Built with Flask, OpenCV, scikit-learn, ReportLab and Chart.js (MIT).
 
 ---
 
-**Built by Pankaj**
